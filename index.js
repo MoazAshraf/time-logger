@@ -17,6 +17,8 @@ const db = await mongoose.connect(dbUrl);
 const app = express();
 app.use(logging);
 
+// TODO: Setup endpoint routes
+
 // Start the web server
 const server = http.createServer(app);
 server.listen(port, hostname, () => {
