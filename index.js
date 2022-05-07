@@ -2,6 +2,7 @@ import http from "http";
 import express from "express";
 import logging from "morgan";
 import mongoose from "mongoose";
+import Task from "./models/task.js";
 
 // HTTP Server
 const hostname = "localhost";
@@ -24,14 +25,18 @@ const server = http.createServer(app);
 server.listen(port, hostname, () => {
     console.log(`Server started on http://${hostname}:${port}`);
 
-    // Testing Mongoose
-    const kittySchema = new mongoose.Schema({
-        name: String,
+    // Testing Task schema
+    const task = new Task({
+        name: "Task A",
+        intervals: [{ begin: new Date(), end: new Date() }],
     });
-    const Kitten = new mongoose.model("Kitten", kittySchema);
-    Kitten.create({ name: "Ajax" })
-        .then(() => {
-            return Kitten.find({}).exec();
+    task.save()
+        .then((task) => {
+            console.log(task);
+            console.log(task.workDuration());
         })
-        .then(console.log);
+        .then(() => {
+            Task.deleteMany().exec().then(console.log);
+            // Task.find().exec().then(console.log);
+        });
 });
