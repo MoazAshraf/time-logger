@@ -5,6 +5,7 @@ import logging from "morgan";
 import mongoose from "mongoose";
 import Task from "./models/task.js";
 import apiRouter from "./routes/api.js";
+import bodyParser from "body-parser";
 
 // Promisify setTimeout
 const sleep = util.promisify(setTimeout);
@@ -21,45 +22,14 @@ const db = await mongoose.connect(dbUrl);
 
 // Create the Express application
 const app = express();
-app.use(logging);
+app.use(bodyParser.json());
+app.use(logging("dev"));
 
 // Setup endpoint routes
-// app.get("/api/tasks", () => )
 app.use("/api", apiRouter);
 
 // Start the web server
 const server = http.createServer(app);
 server.listen(port, hostname, () => {
     console.log(`Server started on http://${hostname}:${port}`);
-
-    let begin = new Date();
-    const intervals = [];
-    sleep(100)
-        .then(() => {
-            intervals.push({ begin: begin, end: new Date() });
-            return sleep(100);
-        })
-        .then(() => {
-            begin = new Date();
-            return sleep(100);
-        })
-        .then(() => {
-            intervals.push({ begin: begin, end: new Date() });
-        })
-        .then(() => {
-            // Testing Task schema
-            const task = new Task({
-                name: "Task A",
-                intervals: intervals,
-            });
-            return task.save();
-        })
-        .then((task) => {
-            console.log(task);
-            console.log(task.workDuration());
-        })
-        .then(() => {
-            // Task.deleteMany().exec().then(console.log);
-            // Task.find().exec().then(console.log);
-        });
 });

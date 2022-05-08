@@ -47,6 +47,14 @@ const taskSchema = new mongoose.Schema({
 taskSchema.methods.workDuration = function () {
     return getTotalDuration(this.intervals);
 };
+
+// Plain Old JavaScript Object with Duration
+taskSchema.methods.pojoWithDuration = function() {
+    const duration = this.workDuration();
+    const task = this.toObject();
+    task.duration = duration;
+    return task;
+}
 const Task = mongoose.model("Task", taskSchema);
 
 export default Task;
