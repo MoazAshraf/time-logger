@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import Task from "./models/task.js";
 import apiRouter from "./routes/api.js";
 import bodyParser from "body-parser";
+import { exit } from "process";
 
 // Promisify setTimeout
 const sleep = util.promisify(setTimeout);
@@ -18,7 +19,12 @@ const port = 8000;
 const dbUrl = `mongodb://localhost:27017/timeLogDb`;
 
 // Connect to the database server
-const db = await mongoose.connect(dbUrl);
+try {
+    const db = await mongoose.connect(dbUrl, { serverSelectionTimeoutMS: 3000 });
+} catch (err) {
+    console.error(err.toString());
+    exit(1);
+}
 
 // Create the Express application
 const app = express();
