@@ -59,11 +59,7 @@ tasksRouter
             });
     })
     .put((req, res, next) => {
-        Task.findByIdAndUpdate(
-            req.params.taskId,
-            { $set: req.body },
-            { new: true, runValidators: true }
-        )
+        Task.findById(req.params.taskId)
             .exec()
             .then((task) => {
                 if (!task) {
@@ -71,7 +67,25 @@ tasksRouter
                     err.status = 404;
                     next(err);
                 } else {
-                    res.json(task.pojoWithDuration());
+                    if (req.body.name) task.name = req.body.name;
+                    if (req.body.state) {
+                        if (task.state != req.body.state) {
+                            if (req.body.state == "doing") {
+                                const interval = {
+                                    begin: new Date(),
+                                    end: null,
+                                };
+                                task.intervals.push(interval);
+                            } else {
+                                task.intervals[task.intervals.length - 1].end =
+                                    new Date();
+                            }
+                        }
+                        task.state = req.body.state;
+                    }
+                    return task.save().then(() => {
+                        res.json(task.pojoWithDuration());
+                    });
                 }
             })
             .catch(next);

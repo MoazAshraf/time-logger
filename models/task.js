@@ -8,7 +8,6 @@ const intervalSchema = new mongoose.Schema({
     },
     end: {
         type: Date,
-        required: true,
         // ongoing intervals have end = null
         validate: function (val) {
             return val == null ? true : val >= this.begin;
