@@ -1,7 +1,7 @@
 {
-  "name": "time-logger",
+  "name": "time-logger-api",
   "version": "1.0.0",
-  "description": "A time logging web application built in the MERN stack",
+  "description": "Time Logger API built in MongoDB & Express",
   "main": "index.js",
   "type": "module",
   "scripts": {
