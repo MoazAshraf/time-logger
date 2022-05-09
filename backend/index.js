@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import Task from "./models/task.js";
 import apiRouter from "./routes/api.js";
 import bodyParser from "body-parser";
+import cors from "cors";
 import { exit } from "process";
 
 // Promisify setTimeout
@@ -28,6 +29,7 @@ try {
 
 // Create the Express application
 const app = express();
+app.use(cors());
 app.use(bodyParser.json());
 app.use(logging("dev"));
 
