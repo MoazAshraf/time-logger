@@ -19,11 +19,18 @@ class App extends Component {
         }
     }
 
-    handleTaskStart(task) {
-        const newTaskState = task.state === "doing" ? "done" : "doing";
+    updateTask(task, update) {
+        for (const key in update) {
+            if (!(key in task))
+                throw new Error(`"${key}" is not a property of a task.`);
+            if (task[key] === update[key])
+                delete update[key];
+        }
+        if (Object.keys(update).length === 0)
+            return;
         fetch(`${apiUrl}/tasks/${task._id}`, {
             method: "PUT",
-            body: JSON.stringify({ state: newTaskState }),
+            body: JSON.stringify(update),
             headers: { "Content-Type": "application/json" },
         })
             .then((res) => res.json())
@@ -33,19 +40,37 @@ class App extends Component {
                     else return t;
                 });
                 this.setState({ tasks: tasks });
-                console.log(task);
             });
     }
 
+    handleTaskStart(task) {
+        const newTaskState = task.state === "doing" ? "done" : "doing";
+        this.updateTask(task, { state: newTaskState });
+    }
+
+    handleTaskCheckChange(task, checked) {
+        const newTaskState = checked ? "done" : "todo";
+        this.updateTask(task, { state: newTaskState });
+    }
+
     render() {
+        console.log("render");
         const tasksHtml = this.state.tasks.map((task) => {
             return (
                 <li key={task._id}>
-                    {task.name}
+                    {/* TODO: Use a form? */}
+                    <input
+                        type="checkbox"
+                        checked={task.state === "done"}
+                        onChange={(e) => {
+                            this.handleTaskCheckChange(task, e.target.checked);
+                        }}
+                    ></input>
                     {/* TODO: Use .bind()? */}
                     <button onClick={() => this.handleTaskStart(task)}>
-                        {task.state != "doing" ? "Start" : "Stop"}
+                        {task.state !== "doing" ? "Start" : "Stop"}
                     </button>
+                    {task.name}
                 </li>
             );
         });
