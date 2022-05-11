@@ -1,3 +1,4 @@
+// TODO: Deal with DevTools failed to load source map warning
 import { Component } from "react";
 import { TimeSpan } from "timespan";
 import "./App.css";
@@ -11,7 +12,6 @@ function timeSpanFromPojo(pojo) {
     for (const key in pojo) {
         tspan[key] = pojo[key];
     }
-    console.log(tspan);
     return tspan;
 }
 
@@ -19,26 +19,71 @@ function timeSpanFromPojo(pojo) {
 // TODO: custom duration to string
 function msecsToString(msecs) {
     let seconds = Math.floor(msecs / 1000);
-    msecs = Math.round(((msecs / 1000) - seconds) * 1000);
+    msecs = Math.round((msecs / 1000 - seconds) * 1000);
 
     let minutes = Math.floor(seconds / 60);
-    seconds = Math.round(((seconds / 60) - minutes) * 60);
+    seconds = Math.round((seconds / 60 - minutes) * 60);
 
     let hours = Math.floor(minutes / 60);
-    minutes = Math.round(((minutes / 60) - hours) * 60);
+    minutes = Math.round((minutes / 60 - hours) * 60);
 
     console.log(`${hours}:${minutes}:${seconds}.${msecs}`);
     // return result;
 }
 
-function timeSpanToString(tspan) {
-    
+function timeSpanToString(tspan) {}
+
+class Task extends Component {
+    render() {
+        const task = this.props.task;
+        // let timerHtml = null;
+        // TODO: remove bold, replace with CSS
+        // TODO: fix spacing
+        // TODO: increment duration during "doing"
+        let duration = timeSpanFromPojo(task.duration);
+        if (task.state === "doing") {
+            // TODO: Use a better date parsing method
+            const msecs =
+                Date.now() -
+                Date.parse(task.intervals[task.intervals.length - 1].begin);
+            console.log(duration);
+            duration.add({ msecs: msecs });
+            console.log(duration);
+        }
+        duration = duration.toString();
+
+        const timerHtml = (
+            <span>
+                <b> {duration}</b>
+            </span>
+        );
+        return (
+            <li>
+                {/* TODO: Use a form? */}
+                <input
+                    type="checkbox"
+                    checked={task.state === "done"}
+                    onChange={(e) => {
+                        this.props.onCheckboxChange(e.target.checked);
+                    }}
+                ></input>
+                {/* TODO: Use .bind()? */}
+                <button onClick={() => this.props.onButtonClick()}>
+                    {task.state !== "doing" ? "Start" : "Stop"}
+                </button>
+                <span>{task.name}</span>
+                {timerHtml}
+            </li>
+        );
+    }
 }
 
 class App extends Component {
     constructor(props) {
         super(props);
         this.state = { tasks: [] };
+        this.handleTaskCheckChange.bind(this);
+        this.handleTaskToggle.bind(this);
     }
 
     componentDidMount() {
@@ -73,7 +118,7 @@ class App extends Component {
             });
     }
 
-    handleTaskStart(task) {
+    handleTaskToggle(task) {
         const newTaskState = task.state === "doing" ? "done" : "doing";
         this.updateTask(task, { state: newTaskState });
     }
@@ -84,41 +129,16 @@ class App extends Component {
     }
 
     render() {
-        console.log("render");
-        const tasksHtml = this.state.tasks.map((task) => {
-            // let timerHtml = null;
-            // if (task.state === "doing")
-            // TODO: remove bold, replace with CSS
-            // TODO: fix spacing
-            // TODO: increment duration during "doing"
-            let duration = timeSpanFromPojo(task.duration);
-            duration = duration.toString();
-            console.log(duration);
-
-            const timerHtml = (
-                <span>
-                    <b> {duration}</b>
-                </span>
-            );
-            return (
-                <li key={task._id}>
-                    {/* TODO: Use a form? */}
-                    <input
-                        type="checkbox"
-                        checked={task.state === "done"}
-                        onChange={(e) => {
-                            this.handleTaskCheckChange(task, e.target.checked);
-                        }}
-                    ></input>
-                    {/* TODO: Use .bind()? */}
-                    <button onClick={() => this.handleTaskStart(task)}>
-                        {task.state !== "doing" ? "Start" : "Stop"}
-                    </button>
-                    <span>{task.name}</span>
-                    {timerHtml}
-                </li>
-            );
-        });
+        const tasksHtml = this.state.tasks.map((task) => (
+            <Task
+                key={task._id}
+                task={task}
+                onButtonClick={() => this.handleTaskToggle(task)}
+                onCheckboxChange={(checked) =>
+                    this.handleTaskCheckChange(task, checked)
+                }
+            />
+        ));
 
         return (
             <div className="App">
