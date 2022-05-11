@@ -1,7 +1,39 @@
 import { Component } from "react";
+import { TimeSpan } from "timespan";
 import "./App.css";
 
 const apiUrl = "http://localhost:8000/api";
+
+// Creates a TimeSpan object from a plain-old JavaScript object with
+// the structure of a timespan
+function timeSpanFromPojo(pojo) {
+    const tspan = new TimeSpan();
+    for (const key in pojo) {
+        tspan[key] = pojo[key];
+    }
+    console.log(tspan);
+    return tspan;
+}
+
+// Converts a number of milliseconds into a string
+// TODO: custom duration to string
+function msecsToString(msecs) {
+    let seconds = Math.floor(msecs / 1000);
+    msecs = Math.round(((msecs / 1000) - seconds) * 1000);
+
+    let minutes = Math.floor(seconds / 60);
+    seconds = Math.round(((seconds / 60) - minutes) * 60);
+
+    let hours = Math.floor(minutes / 60);
+    minutes = Math.round(((minutes / 60) - hours) * 60);
+
+    console.log(`${hours}:${minutes}:${seconds}.${msecs}`);
+    // return result;
+}
+
+function timeSpanToString(tspan) {
+    
+}
 
 class App extends Component {
     constructor(props) {
@@ -23,11 +55,9 @@ class App extends Component {
         for (const key in update) {
             if (!(key in task))
                 throw new Error(`"${key}" is not a property of a task.`);
-            if (task[key] === update[key])
-                delete update[key];
+            if (task[key] === update[key]) delete update[key];
         }
-        if (Object.keys(update).length === 0)
-            return;
+        if (Object.keys(update).length === 0) return;
         fetch(`${apiUrl}/tasks/${task._id}`, {
             method: "PUT",
             body: JSON.stringify(update),
@@ -56,6 +86,20 @@ class App extends Component {
     render() {
         console.log("render");
         const tasksHtml = this.state.tasks.map((task) => {
+            // let timerHtml = null;
+            // if (task.state === "doing")
+            // TODO: remove bold, replace with CSS
+            // TODO: fix spacing
+            // TODO: increment duration during "doing"
+            let duration = timeSpanFromPojo(task.duration);
+            duration = duration.toString();
+            console.log(duration);
+
+            const timerHtml = (
+                <span>
+                    <b> {duration}</b>
+                </span>
+            );
             return (
                 <li key={task._id}>
                     {/* TODO: Use a form? */}
@@ -70,7 +114,8 @@ class App extends Component {
                     <button onClick={() => this.handleTaskStart(task)}>
                         {task.state !== "doing" ? "Start" : "Stop"}
                     </button>
-                    {task.name}
+                    <span>{task.name}</span>
+                    {timerHtml}
                 </li>
             );
         });
