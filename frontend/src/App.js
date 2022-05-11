@@ -34,24 +34,57 @@ function msecsToString(msecs) {
 function timeSpanToString(tspan) {}
 
 class Task extends Component {
-    render() {
+    constructor(props) {
+        super(props);
         const task = this.props.task;
-        // let timerHtml = null;
-        // TODO: remove bold, replace with CSS
-        // TODO: fix spacing
-        // TODO: increment duration during "doing"
-        let duration = timeSpanFromPojo(task.duration);
+        this.interval = null;
+        this.startDuration = task.duration;
+        this.state = { duration: this.getDuration() };
+    }
+
+    getDuration() {
+        const duration = timeSpanFromPojo(this.startDuration);
+        const task = this.props.task;
         if (task.state === "doing") {
-            // TODO: Use a better date parsing method
             const msecs =
                 Date.now() -
                 Date.parse(task.intervals[task.intervals.length - 1].begin);
-            console.log(duration);
-            duration.add({ msecs: msecs });
-            console.log(duration);
+            duration.addMilliseconds(msecs);
         }
-        duration = duration.toString();
+        return duration;
+    }
 
+    componentDidMount() {
+        this.startTimer();
+    }
+
+    startTimer() {
+        if (this.interval !== null || this.props.task.state !== "doing") return;
+        this.interval = setInterval(() => {
+            console.log("interval");
+            const task = this.props.task;
+            if (task.state !== "doing") {
+                clearInterval(this.interval);
+                this.interval = null;
+            } else {
+                this.setState({ duration: this.getDuration() });
+            }
+        }, 1000);
+    }
+
+    stopTimer() {
+        clearInterval(this.interval);
+        this.interval = null;
+    }
+
+    render() {
+        const task = this.props.task;
+        this.startDuration = task.duration;
+        if (task.state === "doing") this.startTimer();
+        const duration = this.getDuration().toString();
+
+        // TODO: remove bold, replace with CSS
+        // TODO: fix spacing
         const timerHtml = (
             <span>
                 <b> {duration}</b>
@@ -64,11 +97,19 @@ class Task extends Component {
                     type="checkbox"
                     checked={task.state === "done"}
                     onChange={(e) => {
+                        if (!e.target.checked)
+                            this.stopTimer();
                         this.props.onCheckboxChange(e.target.checked);
                     }}
                 ></input>
                 {/* TODO: Use .bind()? */}
-                <button onClick={() => this.props.onButtonClick()}>
+                <button
+                    onClick={() => {
+                        if (this.props.task.state === "doing")
+                            this.stopTimer();
+                        this.props.onButtonClick();
+                    }}
+                >
                     {task.state !== "doing" ? "Start" : "Stop"}
                 </button>
                 <span>{task.name}</span>
@@ -111,8 +152,10 @@ class App extends Component {
             .then((res) => res.json())
             .then((task) => {
                 const tasks = this.state.tasks.map((t) => {
-                    if (task._id === t._id) return task;
-                    else return t;
+                    if (task._id === t._id) {
+                        console.log(task);
+                        return task;
+                    } else return t;
                 });
                 this.setState({ tasks: tasks });
             });
