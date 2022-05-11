@@ -78,8 +78,13 @@ tasksRouter
                                 };
                                 task.intervals.push(interval);
                             } else {
-                                task.intervals[task.intervals.length - 1].end =
-                                    new Date();
+                                if (
+                                    task.state === "doing" &&
+                                    task.intervals.length > 0
+                                )
+                                    task.intervals[
+                                        task.intervals.length - 1
+                                    ].end = new Date();
                             }
                         }
                         task.state = req.body.state;

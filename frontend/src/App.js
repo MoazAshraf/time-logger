@@ -137,6 +137,7 @@ class Task extends Component {
                     {/* TODO: Remove <b>, add CSS */}
                     <b> {duration}</b>
                 </span>
+                <button onClick={this.props.onDelete}>X</button>
             </li>
         );
     }
@@ -164,11 +165,12 @@ class App extends Component {
     createTask(name) {
         fetch(`${apiUrl}/tasks/`, {
             method: "POST",
-            body: JSON.stringify({name: name}),
+            body: JSON.stringify({ name: name }),
             headers: { "Content-Type": "application/json" },
         })
             .then((res) => res.json())
             .then((task) => {
+                console.log(task);
                 const tasks = [...this.state.tasks, task];
                 this.setState({ tasks: tasks });
             });
@@ -181,11 +183,20 @@ class App extends Component {
             if (task[key] === update[key]) delete update[key];
         }
         if (Object.keys(update).length === 0) return;
+
         fetch(`${apiUrl}/tasks/${task._id}`, {
             method: "PUT",
             body: JSON.stringify(update),
             headers: { "Content-Type": "application/json" },
         })
+            .then((res) => {
+                console.log(res.status);
+                if (res.status !== 200)
+                    throw new Error(
+                        `Server returned status code ${res.status}`
+                    );
+                return res;
+            })
             .then((res) => res.json())
             .then((task) => {
                 const tasks = this.state.tasks.map((t) => {
@@ -194,6 +205,23 @@ class App extends Component {
                     } else return t;
                 });
                 this.setState({ tasks: tasks });
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }
+
+    deleteTask(task) {
+        fetch(`${apiUrl}/tasks/${task._id}`, {
+            method: "DELETE",
+        })
+            .then((res) => res.json())
+            .then((result) => {
+                console.log(result);
+                const tasks = this.state.tasks;
+                this.setState({
+                    tasks: tasks.filter((t) => t._id !== task._id),
+                });
             });
     }
 
@@ -222,6 +250,7 @@ class App extends Component {
                     this.handleTaskCheckChange(task, checked)
                 }
                 onNameChange={(name) => this.handleTaskNameChange(task, name)}
+                onDelete={() => this.deleteTask(task)}
             />
         ));
 
