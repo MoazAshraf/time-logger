@@ -39,7 +39,7 @@ class Task extends Component {
         const task = this.props.task;
         this.interval = null;
         this.startDuration = task.duration;
-        this.state = { duration: this.getDuration() };
+        this.state = { duration: this.getDuration(), isEditingName: false };
     }
 
     getDuration() {
@@ -61,7 +61,6 @@ class Task extends Component {
     startTimer() {
         if (this.interval !== null || this.props.task.state !== "doing") return;
         this.interval = setInterval(() => {
-            console.log("interval");
             const task = this.props.task;
             if (task.state !== "doing") {
                 clearInterval(this.interval);
@@ -76,6 +75,12 @@ class Task extends Component {
         clearInterval(this.interval);
         this.interval = null;
     }
+    
+    // TODO: use ref
+    changeName(nameInput) {
+        this.props.onNameChange(nameInput.value);
+        this.setState({ isEditingName: false });
+    }
 
     render() {
         const task = this.props.task;
@@ -83,13 +88,31 @@ class Task extends Component {
         if (task.state === "doing") this.startTimer();
         const duration = this.getDuration().toString();
 
-        // TODO: remove bold, replace with CSS
-        // TODO: fix spacing
-        const timerHtml = (
-            <span>
-                <b> {duration}</b>
-            </span>
-        );
+        let nameHtml;
+        if (this.state.isEditingName) {
+            // TODO: https://stackoverflow.com/a/28890330/3673255
+            nameHtml = (
+                <input
+                    type="text"
+                    defaultValue={task.name}
+                    autoFocus={true}
+                    onBlur={(e) => this.changeName(e.target)}
+                    onKeyUp={(e) => {
+                        if (e.key === "Enter")
+                            this.changeName(e.target)
+                    }}
+                />
+            );
+        } else {
+            nameHtml = (
+                <span
+                    onDoubleClick={() => this.setState({ isEditingName: true })}
+                >
+                    {task.name}
+                </span>
+            );
+        }
+
         return (
             <li>
                 {/* TODO: Use a form? */}
@@ -97,23 +120,24 @@ class Task extends Component {
                     type="checkbox"
                     checked={task.state === "done"}
                     onChange={(e) => {
-                        if (!e.target.checked)
-                            this.stopTimer();
+                        if (!e.target.checked) this.stopTimer();
                         this.props.onCheckboxChange(e.target.checked);
                     }}
                 ></input>
                 {/* TODO: Use .bind()? */}
                 <button
                     onClick={() => {
-                        if (this.props.task.state === "doing")
-                            this.stopTimer();
+                        if (this.props.task.state === "doing") this.stopTimer();
                         this.props.onButtonClick();
                     }}
                 >
                     {task.state !== "doing" ? "Start" : "Stop"}
                 </button>
-                <span>{task.name}</span>
-                {timerHtml}
+                {nameHtml}
+                <span>
+                    {/* TODO: Remove <b>, add CSS */}
+                    <b> {duration}</b>
+                </span>
             </li>
         );
     }
@@ -125,6 +149,7 @@ class App extends Component {
         this.state = { tasks: [] };
         this.handleTaskCheckChange.bind(this);
         this.handleTaskToggle.bind(this);
+        this.handleTaskNameChange.bind(this);
     }
 
     componentDidMount() {
@@ -153,7 +178,6 @@ class App extends Component {
             .then((task) => {
                 const tasks = this.state.tasks.map((t) => {
                     if (task._id === t._id) {
-                        console.log(task);
                         return task;
                     } else return t;
                 });
@@ -161,14 +185,19 @@ class App extends Component {
             });
     }
 
+    // TODO: Better name
     handleTaskToggle(task) {
-        const newTaskState = task.state === "doing" ? "done" : "doing";
-        this.updateTask(task, { state: newTaskState });
+        this.updateTask(task, {
+            state: task.state === "doing" ? "todo" : "doing",
+        });
     }
 
     handleTaskCheckChange(task, checked) {
-        const newTaskState = checked ? "done" : "todo";
-        this.updateTask(task, { state: newTaskState });
+        this.updateTask(task, { state: checked ? "done" : "todo" });
+    }
+
+    handleTaskNameChange(task, name) {
+        this.updateTask(task, { name: name });
     }
 
     render() {
@@ -180,6 +209,7 @@ class App extends Component {
                 onCheckboxChange={(checked) =>
                     this.handleTaskCheckChange(task, checked)
                 }
+                onNameChange={(name) => this.handleTaskNameChange(task, name)}
             />
         ));
 
