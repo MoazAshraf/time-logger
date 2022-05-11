@@ -75,7 +75,7 @@ class Task extends Component {
         clearInterval(this.interval);
         this.interval = null;
     }
-    
+
     // TODO: use ref
     changeName(nameInput) {
         this.props.onNameChange(nameInput.value);
@@ -98,8 +98,7 @@ class Task extends Component {
                     autoFocus={true}
                     onBlur={(e) => this.changeName(e.target)}
                     onKeyUp={(e) => {
-                        if (e.key === "Enter")
-                            this.changeName(e.target)
+                        if (e.key === "Enter") this.changeName(e.target);
                     }}
                 />
             );
@@ -162,6 +161,19 @@ class App extends Component {
         }
     }
 
+    createTask(name) {
+        fetch(`${apiUrl}/tasks/`, {
+            method: "POST",
+            body: JSON.stringify({name: name}),
+            headers: { "Content-Type": "application/json" },
+        })
+            .then((res) => res.json())
+            .then((task) => {
+                const tasks = [...this.state.tasks, task];
+                this.setState({ tasks: tasks });
+            });
+    }
+
     updateTask(task, update) {
         for (const key in update) {
             if (!(key in task))
@@ -217,6 +229,18 @@ class App extends Component {
             <div className="App">
                 <h1>Time Logger</h1>
                 <ul className="tasks">{tasksHtml}</ul>
+                <input
+                    type="text"
+                    onKeyUp={(e) => {
+                        if (e.key === "Enter") {
+                            const name = e.target.value;
+                            if (name !== "") {
+                                this.createTask(e.target.value);
+                                e.target.value = "";
+                            }
+                        }
+                    }}
+                />
             </div>
         );
     }
