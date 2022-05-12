@@ -1,8 +1,66 @@
 /* = Custom Fonts */
+/* TODO: Find a better font ? */
 @font-face {
     font-family: 'Alata';
     src: url('./fonts/alata-regular-webfont.woff2') format('woff2'),
          url('./fonts/alata-regular-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
+}
+
+
+/* = General Styles */
+html {
+    font-size: 10px;
+    font-family: Alata, Helvetica, Arial, sans-serif;
+    /* height: 100vh; */
+}
+
+body {
+    /* background-color: #2d2d2d; */
+    /* color: white; */
+    font-size: 1.6rem;
+}
+
+input, button {
+    font-size: inherit;
+    font-family: inherit;
+    color: inherit;
+    outline: none;
+    border: none;
+}
+
+ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+/*
+input[type="text"] {
+    background-color: #626262;
+}
+ */
+
+
+/* = Main Layout */
+html {
+    height: 100vh;
+}
+
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-flow: column;
+}
+
+header, footer {
+    background-color: lightblue;
+}
+
+main {
+    background-color: salmon;
+    flex: 1;
 }
