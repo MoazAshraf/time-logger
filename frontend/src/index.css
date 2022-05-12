@@ -36,6 +36,11 @@ ul {
     list-style: none;
 }
 
+h1 {
+    padding: 0;
+    margin: 0;
+}
+
 /*
 input[type="text"] {
     background-color: #626262;
@@ -50,17 +55,72 @@ html {
 
 body {
     height: 100%;
-    margin: 0;
+    margin: 0 auto;
     padding: 0;
     display: flex;
     flex-flow: column;
+    width: 48rem;
 }
 
 header, footer {
     background-color: lightblue;
 }
 
+/* = Footer */
+header {
+    text-align: center;
+    padding: 1rem;
+}
+
+
+/* = Main Content */
+.app {
+    padding: 0.4rem;
+    display: grid;
+    gap: 0.8rem;
+}
+
 main {
     background-color: salmon;
     flex: 1;
+}
+
+/* = Task List */
+/* ul.tasks {
+    padding: 40px;
+} */
+
+/* = Task */
+.task {
+    padding: 0.4rem 0rem;
+    display: flex;
+    gap: 1.2rem;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.task-toggle-btn {
+    flex: 0 0 5rem;
+}
+
+.task-name {
+    flex: 2;
+}
+
+.task-duration {
+    flex: 1 0;
+    text-align: right;
+}
+
+/* = New Task */
+.new-task-input {
+    /* TODO: use a grid instead of hard coding */
+    margin-left: 3.2rem;
+}
+
+
+/* = Footer */
+footer {
+    padding: 0.8rem;
+    text-align: center;
 }

@@ -95,7 +95,7 @@ class Task extends Component {
             nameHtml = (
                 <input
                     type="text"
-                    className="task-name-input"
+                    className="task-name"
                     defaultValue={task.name}
                     autoFocus={true}
                     onBlur={(e) => this.changeName(e.target)}
@@ -143,7 +143,7 @@ class Task extends Component {
                     className="task-delete-btn"
                     onClick={this.props.onDelete}
                 >
-                    <img src={deleteIcon} alt="X"/>
+                    <img src={deleteIcon} alt="X" />
                 </button>
             </li>
         );
@@ -264,10 +264,10 @@ class App extends Component {
         return (
             <div className="app">
                 <ul className="tasks">{tasksHtml}</ul>
-                <label htmlFor="new-task-input">New Task</label>
                 <input
                     type="text"
                     id="new-task-input"
+                    placeholder="New Task [Enter] to add"
                     className="new-task-input"
                     onKeyUp={(e) => {
                         if (e.key === "Enter") {
