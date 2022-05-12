@@ -2,6 +2,7 @@
 import { Component } from "react";
 import { TimeSpan } from "timespan";
 import "./App.css";
+import deleteIcon from "./images/delete-mark.svg";
 
 const apiUrl = "http://localhost:8000/api";
 
@@ -68,7 +69,7 @@ class Task extends Component {
             } else {
                 this.setState({ duration: this.getDuration() });
             }
-        }, 1000);
+        }, 100);
     }
 
     stopTimer() {
@@ -94,6 +95,7 @@ class Task extends Component {
             nameHtml = (
                 <input
                     type="text"
+                    className="task-name-input"
                     defaultValue={task.name}
                     autoFocus={true}
                     onBlur={(e) => this.changeName(e.target)}
@@ -105,6 +107,7 @@ class Task extends Component {
         } else {
             nameHtml = (
                 <span
+                    className="task-name"
                     onDoubleClick={() => this.setState({ isEditingName: true })}
                 >
                     {task.name}
@@ -113,10 +116,11 @@ class Task extends Component {
         }
 
         return (
-            <li>
+            <li className="task">
                 {/* TODO: Use a form? */}
                 <input
                     type="checkbox"
+                    className="task-checkbox"
                     checked={task.state === "done"}
                     onChange={(e) => {
                         if (!e.target.checked) this.stopTimer();
@@ -125,6 +129,7 @@ class Task extends Component {
                 ></input>
                 {/* TODO: Use .bind()? */}
                 <button
+                    className="task-toggle-btn"
                     onClick={() => {
                         if (this.props.task.state === "doing") this.stopTimer();
                         this.props.onButtonClick();
@@ -133,11 +138,13 @@ class Task extends Component {
                     {task.state !== "doing" ? "Start" : "Stop"}
                 </button>
                 {nameHtml}
-                <span>
-                    {/* TODO: Remove <b>, add CSS */}
-                    <b> {duration}</b>
-                </span>
-                <button onClick={this.props.onDelete}>X</button>
+                <span className="task-duration">{duration}</span>
+                <button
+                    className="task-delete-btn"
+                    onClick={this.props.onDelete}
+                >
+                    <img src={deleteIcon} alt="X"/>
+                </button>
             </li>
         );
     }
@@ -255,11 +262,13 @@ class App extends Component {
         ));
 
         return (
-            <div className="App">
-                <h1>Time Logger</h1>
+            <div className="app">
                 <ul className="tasks">{tasksHtml}</ul>
+                <label htmlFor="new-task-input">New Task</label>
                 <input
                     type="text"
+                    id="new-task-input"
+                    className="new-task-input"
                     onKeyUp={(e) => {
                         if (e.key === "Enter") {
                             const name = e.target.value;
