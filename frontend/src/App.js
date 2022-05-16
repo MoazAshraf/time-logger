@@ -2,7 +2,9 @@
 import { Component } from "react";
 import { TimeSpan } from "timespan";
 import "./App.css";
-import deleteIcon from "./images/delete-mark.svg";
+import deleteIcon from "./images/delete-btn.png";
+import startIcon from "./images/start-btn.png";
+import stopIcon from "./images/stop-btn.png";
 
 const apiUrl = "http://localhost:8000/api";
 
@@ -165,7 +167,7 @@ class Task extends Component {
         }
 
         return (
-            <li className="task">
+            <li className={task.state === "doing" ? "task doing" : "task"}>
                 {/* TODO: Use a form? */}
                 <input
                     type="checkbox"
@@ -184,7 +186,11 @@ class Task extends Component {
                         this.props.onButtonClick();
                     }}
                 >
-                    {task.state !== "doing" ? "Start" : "Stop"}
+                    <img
+                        src={task.state !== "doing" ? startIcon : stopIcon}
+                        alt="Toggle Start/Stop"
+                        onContextMenu={(e) => e.preventDefault()}
+                    />
                 </button>
                 {nameHtml}
                 {durationHtml}
@@ -192,7 +198,11 @@ class Task extends Component {
                     className="task-delete-btn"
                     onClick={this.props.onDelete}
                 >
-                    <img src={deleteIcon} alt="X" />
+                    <img
+                        src={deleteIcon}
+                        alt="Delete"
+                        onContextMenu={(e) => e.preventDefault()}
+                    />
                 </button>
             </li>
         );
