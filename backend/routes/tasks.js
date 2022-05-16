@@ -68,7 +68,6 @@ tasksRouter
                     next(err);
                 } else {
                     if (req.body.name) task.name = req.body.name;
-                    console.log(req.body);
                     if (req.body.state) {
                         if (task.state != req.body.state) {
                             if (req.body.state == "doing") {

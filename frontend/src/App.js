@@ -16,23 +16,60 @@ function timeSpanFromPojo(pojo) {
     return tspan;
 }
 
-// Converts a number of milliseconds into a string
-// TODO: custom duration to string
-function msecsToString(msecs) {
-    let seconds = Math.floor(msecs / 1000);
-    msecs = Math.round((msecs / 1000 - seconds) * 1000);
+// Converts a time span into a full string
+function timeSpanToShortString(tspan) {
+    let milliseconds = tspan.milliseconds;
+    let seconds = tspan.seconds;
+    let minutes = tspan.minutes;
+    let hours = tspan.hours;
+    let days = tspan.days;
 
-    let minutes = Math.floor(seconds / 60);
-    seconds = Math.round((seconds / 60 - minutes) * 60);
+    let secondsStr = `${seconds} s`;
+    let minutesStr = `${minutes} min`;
+    let hoursStr = hours === 1 ? `${hours} hr` : `${hours} hrs`;
+    let daysStr = days === 1 ? `${days} day` : `${days} days`;
 
-    let hours = Math.floor(minutes / 60);
-    minutes = Math.round((minutes / 60 - hours) * 60);
+    let result = secondsStr;
+    if (days > 0) {
+        result = daysStr;
+        if (hours > 0) {
+            result += ", " + hoursStr;
+        }
+    } else if (hours > 0) {
+        result = hoursStr;
+        if (minutes > 0) {
+            result += ", " + minutesStr;
+        }
+    } else if (minutes > 0) {
+        result = minutesStr;
+        if (seconds > 0) {
+            result += ", " + secondsStr;
+        }
+    }
 
-    console.log(`${hours}:${minutes}:${seconds}.${msecs}`);
-    // return result;
+    return result;
 }
 
-function timeSpanToString(tspan) {}
+// Converts a time span into a full string
+function timeSpanToFullString(tspan) {
+    let milliseconds = tspan.milliseconds;
+    let seconds = tspan.seconds + milliseconds / 1000;
+    let minutes = tspan.minutes;
+    let hours = tspan.hours;
+    let days = tspan.days;
+
+    let secondsStr = `${seconds} s`;
+    let minutesStr = `${minutes} min`;
+    let hoursStr = hours === 1 ? `${hours} hr` : `${hours} hrs`;
+    let daysStr = days === 1 ? `${days} day` : `${days} days`;
+
+    let result = secondsStr;
+    if (minutes > 0) result = minutesStr + ", " + result;
+    if (hours > 0) result = hoursStr + ", " + result;
+    if (days > 0) result = daysStr + ", " + result;
+
+    return result;
+}
 
 class Task extends Component {
     constructor(props) {
@@ -87,7 +124,19 @@ class Task extends Component {
         const task = this.props.task;
         this.startDuration = task.duration;
         if (task.state === "doing") this.startTimer();
-        const duration = this.getDuration().toString();
+        const duration = this.getDuration();
+
+        let durationHtml = null;
+        if (duration.msecs > 0) {
+            durationHtml = (
+                <span
+                    className="task-duration"
+                    title={timeSpanToFullString(duration)}
+                >
+                    {timeSpanToShortString(duration)}
+                </span>
+            );
+        }
 
         let nameHtml;
         if (this.state.isEditingName) {
@@ -138,7 +187,7 @@ class Task extends Component {
                     {task.state !== "doing" ? "Start" : "Stop"}
                 </button>
                 {nameHtml}
-                <span className="task-duration">{duration}</span>
+                {durationHtml}
                 <button
                     className="task-delete-btn"
                     onClick={this.props.onDelete}
