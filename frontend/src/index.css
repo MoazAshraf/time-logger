@@ -1,5 +1,4 @@
 /* = Custom Fonts */
-/* TODO: Find a better font ? */
 @font-face {
     font-family: 'Alata';
     src: url('./fonts/alata-regular-webfont.woff2') format('woff2'),
@@ -8,11 +7,34 @@
     font-style: normal;
 }
 
+@font-face {
+    font-family: 'nunito';
+    src: url('fonts/nunito-regular-webfont.woff2') format('woff2'),
+         url('fonts/nunito-regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'nunito';
+    src: url('fonts/nunito-bold-webfont.woff2') format('woff2'),
+         url('fonts/nunito-bold-webfont.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'nunito-black';
+    src: url('fonts/nunito-black-webfont.woff2') format('woff2'),
+         url('fonts/nunito-black-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
 
 /* = General Styles */
 html {
     font-size: 10px;
-    font-family: Alata, Helvetica, Arial, sans-serif;
+    font-family: nunito, Helvetica, Arial, sans-serif;
     /* height: 100vh; */
 }
 
@@ -23,11 +45,31 @@ body {
 }
 
 input, button {
-    font-size: inherit;
-    font-family: inherit;
+    font: inherit;
     color: inherit;
     outline: none;
     border: none;
+}
+
+button {
+    box-sizing: border-box;
+    background: none;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border-radius: 2px;
+}
+
+button:hover {
+    background-color: #0000001a;
+}
+
+button:active {
+    background-color: #00000033;
+}
+
+input[type="text"] {
+    background-color: #0000001a;
 }
 
 ul {
@@ -39,6 +81,10 @@ ul {
 h1 {
     padding: 0;
     margin: 0;
+}
+
+img {
+    max-width: 100%;
 }
 
 /*
@@ -63,7 +109,7 @@ body {
 }
 
 header, footer {
-    background-color: lightblue;
+    font-family: Alata, Helvetica, Arial, sans-serif;
 }
 
 /* = Footer */
@@ -81,15 +127,10 @@ header {
 }
 
 main {
-    background-color: salmon;
     flex: 1;
 }
 
 /* = Task List */
-/* ul.tasks {
-    padding: 40px;
-} */
-
 /* = Task */
 .task {
     padding: 0.4rem 0rem;
@@ -101,6 +142,14 @@ main {
 
 .task-toggle-btn {
     flex: 0 0 5rem;
+    font-weight: bold;
+}
+
+.task-delete-btn {
+    background: none;
+    padding: 0;
+    width: 2rem;
+    height: 2rem;
 }
 
 .task-name {
@@ -110,6 +159,7 @@ main {
 .task-duration {
     flex: 1 0;
     text-align: right;
+    font-weight: bold;
 }
 
 /* = New Task */

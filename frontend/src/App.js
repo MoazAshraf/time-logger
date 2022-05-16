@@ -16,9 +16,9 @@ function timeSpanFromPojo(pojo) {
     return tspan;
 }
 
+// TODO: Refactor to avoid duplication
 // Converts a time span into a full string
 function timeSpanToShortString(tspan) {
-    let milliseconds = tspan.milliseconds;
     let seconds = tspan.seconds;
     let minutes = tspan.minutes;
     let hours = tspan.hours;
