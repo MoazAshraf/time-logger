@@ -13,7 +13,7 @@ import { exit } from "process";
 const sleep = util.promisify(setTimeout);
 
 // HTTP Server
-const hostname = "localhost";
+const hostname = "0.0.0.0";
 const port = 8000;
 
 // Database Server
@@ -38,6 +38,6 @@ app.use("/api", apiRouter);
 
 // Start the web server
 const server = http.createServer(app);
-server.listen(port, () => {
+server.listen(port, hostname, () => {
     console.log(`Server started on port ${port}`);
 });
