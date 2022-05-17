@@ -6,7 +6,9 @@ import deleteIcon from "./images/delete-btn.png";
 import startIcon from "./images/start-btn.png";
 import stopIcon from "./images/stop-btn.png";
 
-const apiUrl = "http://localhost:8000/api";
+const serverHost = process.env.REACT_APP_SERVER_HOSTNAME;
+const serverPort = process.env.REACT_APP_SERVER_PORT;
+const apiUrl = `http://${serverHost}:${serverPort}/api`;
 
 // Creates a TimeSpan object from a plain-old JavaScript object with
 // the structure of a timespan
