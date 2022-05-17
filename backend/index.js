@@ -38,6 +38,6 @@ app.use("/api", apiRouter);
 
 // Start the web server
 const server = http.createServer(app);
-server.listen(port, hostname, () => {
-    console.log(`Server started on http://${hostname}:${port}`);
+server.listen(port, () => {
+    console.log(`Server started on port ${port}`);
 });
