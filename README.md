@@ -1,7 +1,7 @@
 # Time Logger
 A time logging web application built in the MERN stack.
 
-The project is currently deployed on an AWS EC2 instance at http://ec2-3-19-32-177.us-east-2.compute.amazonaws.com/.
+The project is currently deployed on an AWS EC2 instance at http://ec2-18-119-1-86.us-east-2.compute.amazonaws.com/.
 
 ## MVP Requirements
 - An application with a REST API and a web front-end.
